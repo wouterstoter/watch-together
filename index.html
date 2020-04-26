@@ -1,0 +1,71 @@
+<!DOCTYPE>
+<html>
+  <head>
+    <title>Watch Together</title>
+    <script src='https://meet.jit.si/external_api.js'></script>
+    <script src='https://cdn.jsdelivr.net/hls.js/latest/hls.min.js'></script>
+  </head>
+  <body>
+    <div id="meet" style="position:absolute;width:140px;height:100%;top:0;right:0;z-index:0;"></div>
+    <video controls style="position:absolute;width:calc(100% - 140px);height:100%;top:0;left:0;background:black;"></video>
+    <script>
+      const api = new JitsiMeetExternalAPI('meet.jit.si', {
+        roomName: (document.location.hash || (document.location.hash = "#" + prompt("Please enter room name"))).slice(1),
+        width: "100%",
+        height: "100%",
+        parentNode: document.querySelector('#meet'),
+        interfaceConfigOverwrite: {
+          filmStripOnly: true,
+          DEFAULT_BACKGROUND: '#F1F1F1'
+        }
+      });
+      var laststate;
+      var src;
+      api.addEventListener("endpointTextMessageReceived", function(e){
+        var data = e.data.eventData.text;
+        console.log(data);
+        if (!laststate || JSON.stringify(laststate, Object.keys(laststate).sort()) != JSON.stringify(data, Object.keys(data).sort())) {
+          if (src != data.src) {src = data.src;loadVid();}
+          if (Math.abs(data.currentTime - video.currentTime) > 0.2 && data.currentTime != laststate.currentTime) video.currentTime = data.currentTime;
+          if (data.paused != video.paused) data.paused ? video.pause() : video.play();
+          laststate = data;
+        }
+      });
+      const video = document.querySelector('video');
+      function sendState(e){
+        //console.log(e);
+        for (participantId in api._participants) {
+          laststate = {
+            "src":src,
+            "paused":video.paused,
+            "currentTime":video.currentTime,
+            "event":e.type,
+          }
+          api.executeCommand("sendEndpointTextMessage",participantId,laststate)
+        }
+      }
+      video.addEventListener("click", function(){
+        if (!video.currentSrc) {
+          src = prompt("What is the URL of the video you want to play?")
+          sendState({"type":"newVid"});
+          loadVid();
+        }
+      });
+      function loadVid() {
+        var ext = (new URL(src)).pathname.split("/").slice(-1)[0].split(".").slice(-1)[0]
+        if(Hls.isSupported() && ext == "m3u8") {
+          var hls = new Hls();
+          hls.loadSource(src);
+          hls.attachMedia(video);
+        } else {
+          video.src = src;
+        }
+      }
+      video.addEventListener("play", sendState);
+      video.addEventListener("pause", sendState);
+      video.addEventListener("seeked", sendState);
+      video.addEventListener("waiting", sendState);
+      video.addEventListener("playing", sendState);
+    </script>
+  </body>
+</html>
