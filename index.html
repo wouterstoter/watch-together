@@ -20,28 +20,36 @@
         }
       });
       var laststate;
+      var ignore;
       var src;
-      api.addEventListener("endpointTextMessageReceived", function(e){
+      api.addEventListener("endpointTextMessageReceived", async function(e){
         var data = e.data.eventData.text;
         console.log(data);
         if (!laststate || JSON.stringify(laststate, Object.keys(laststate).sort()) != JSON.stringify(data, Object.keys(data).sort())) {
+          ignore = true;
           if (src != data.src) {src = data.src;loadVid();}
-          if (Math.abs(data.currentTime - video.currentTime) > 0.2 && data.currentTime != laststate.currentTime) video.currentTime = data.currentTime;
-          if (data.paused != video.paused) data.paused ? video.pause() : video.play();
+          if (data.event == "waiting" || data.event == "pause" || data.event == "seeked") {
+            if (Math.abs(data.currentTime - video.currentTime) > 0.5 && (!laststate || data.currentTime != laststate.currentTime)) video.currentTime = data.currentTime;
+          }
+          if (data.paused != video.paused && data.event != "waiting") data.paused ? await video.pause() : await video.play();
+          if (data.event == "waiting") await video.pause();
           laststate = data;
+          setTimeout(a => {ignore = false},100)
         }
       });
       const video = document.querySelector('video');
       function sendState(e){
-        //console.log(e);
-        for (participantId in api._participants) {
-          laststate = {
-            "src":src,
-            "paused":video.paused,
-            "currentTime":video.currentTime,
-            "event":e.type,
+        //console.log(ignorechanges,e);
+        if (!ignore) {
+          for (participantId in api._participants) {
+            laststate = {
+              "src":src,
+              "paused":video.paused,
+              "currentTime":video.currentTime,
+              "event":e.type,
+            }
+            api.executeCommand("sendEndpointTextMessage",participantId,laststate)
           }
-          api.executeCommand("sendEndpointTextMessage",participantId,laststate)
         }
       }
       video.addEventListener("click", function(){
@@ -61,11 +69,11 @@
           video.src = src;
         }
       }
-      video.addEventListener("play", sendState);
-      video.addEventListener("pause", sendState);
-      video.addEventListener("seeked", sendState);
-      //video.addEventListener("waiting", sendState);
-      //video.addEventListener("playing", sendState);
+      video.addEventListener("play", sendState, false);
+      video.addEventListener("pause", sendState, false);
+      video.addEventListener("seeked", sendState, false);
+      video.addEventListener("waiting", sendState);
+      video.addEventListener("playing", sendState);
     </script>
   </body>
 </html>
