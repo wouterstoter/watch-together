@@ -75,8 +75,10 @@
     </div>
     <div id="meet" style="width:100%;">
       <div id="fileoptions" style="display:none;">
-        <button id="open">folder_open</button>
-        <button id="play">play_arrow</button>
+        <button id="open" title="Open Video from URL">folder_open</button>
+        <button id="play" title="Play/Pause video">play_arrow</button>
+        <button id="speed" title="Change Playback speed">speed</button>
+        <button id="sync" title="Synchronize video with other participants">sync</button>
       </div>
     </div>
     <script>
@@ -165,6 +167,8 @@
       document.querySelector("#overlay").addEventListener("click", open);
       document.querySelector("button#open").addEventListener("click", open);
       document.querySelector("button#play").addEventListener("click", e => {video.paused ? video.play() : video.pause()});
+      document.querySelector("button#speed").addEventListener("click", e => {video.playbackRate = Number(prompt("What playback speed do you want?",video.playbackRate)) || video.playbackRate});
+      document.querySelector("button#sync").addEventListener("click", e => {if (Object.keys(api._participants).length > 1) api.executeCommand("sendEndpointTextMessage",Object.keys(api._participants).filter(a => a != api._myUserID)[0],"stateRequest")});
       function loadVid() {
         if (src) {
           document.querySelector("#overlay").style.display = "none";
