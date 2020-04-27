@@ -14,9 +14,19 @@
         width: "100%",
         height: "100%",
         parentNode: document.querySelector('#meet'),
+        configOverwrite: {
+          useNicks: false,
+          requireDisplayName: false,
+          enableDisplayNameInStats: false,
+          enableClosePage: false,
+          doNotStoreRoom: true,
+          displayJids: false
+        },
         interfaceConfigOverwrite: {
           filmStripOnly: true,
-          DEFAULT_BACKGROUND: '#F1F1F1'
+          DEFAULT_REMOTE_DISPLAY_NAME: '',
+          DEFAULT_LOCAL_DISPLAY_NAME: '',
+          MOBILE_APP_PROMO: false
         }
       });
       var laststate;
@@ -69,9 +79,9 @@
           video.src = src;
         }
       }
-      video.addEventListener("play", sendState, false);
-      video.addEventListener("pause", sendState, false);
-      video.addEventListener("seeked", sendState, false);
+      video.addEventListener("play", sendState);
+      video.addEventListener("pause", sendState);
+      video.addEventListener("seeked", sendState);
       video.addEventListener("waiting", sendState);
       video.addEventListener("playing", sendState);
     </script>
