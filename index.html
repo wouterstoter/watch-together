@@ -120,7 +120,7 @@
           api.executeCommand("sendEndpointTextMessage",e.data.senderInfo.id,laststate)
         } else if (!laststate || JSON.stringify(laststate, Object.keys(laststate).sort()) != JSON.stringify(data, Object.keys(data).sort())) {
           ignore = true;
-          if (src != data.src) {src = data.src;loadVid();}
+          if (data.src && src != data.src) {src = data.src;loadVid();}
           if (data.event == "waiting" || data.event == "pause" || data.event == "seeked" || data.event == "stateRequest") {
             if (Math.abs(data.currentTime - video.currentTime) > 0.5 && (!laststate || data.currentTime != laststate.currentTime)) video.currentTime = data.currentTime;
           }
