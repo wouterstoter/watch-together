@@ -95,6 +95,7 @@
         <button id="speed" title="Change Playback speed">speed</button>
         <button id="sync" title="Synchronize video with other participants">sync</button>
         <button id="remove" title="Remove video from servers">delete</button>
+        <button id="info" title="Info about the program">info</button>
       </div>
     </div>
     <script>
@@ -278,6 +279,7 @@
       document.querySelector("button#play").addEventListener("click", e => {video.paused ? video.play() : video.pause()});
       document.querySelector("button#speed").addEventListener("click", e => {video.playbackRate = Number(prompt("What playback speed do you want?",video.playbackRate)) || video.playbackRate});
       document.querySelector("button#sync").addEventListener("click", e => {if (Object.keys(api._participants).length > 1) api.executeCommand("sendEndpointTextMessage",Object.keys(api._participants).filter(a => a != api._myUserID)[0],"stateRequest")});
+      document.querySelector("button#info").addEventListener("click", e => {alert('This program is powered by the amazing video calling service of Jitsi (https://jitsi.org/) to make it possible to (video)call with eachother, and the awesome filesharing service GoFile.io (https://gofile.io/) to make it possible to upload your own videos to watch together. Please go to their websites and give them some love!')});
       function deleteFile() {
         if (fileupload && fileupload.code && fileupload.server && fileupload.removalCode) {
           fetch('https://' + fileupload.server + '.gofile.io/deleteUpload?c=' + fileupload.code + "&rc=" + fileupload.removalCode + "&removeAll=true")
