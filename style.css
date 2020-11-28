@@ -1,0 +1,171 @@
+/*:focus {
+  outline: none;
+}
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  background: black;
+  height: 100%;
+}
+body > #video {
+  width: 0;
+  height: 100%;
+  flex-shrink: 1;
+  flex-grow: 1;
+  background: black;
+  position:relative;
+  overflow:hidden;
+}
+body > #video > #overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #00000078;
+  color: white;
+  z-index: 1;
+  text-align: center;
+  font-family: sans-serif;
+  font-size: xx-large;
+  padding: 20px;
+  box-sizing: border-box;
+  cursor:pointer;
+}
+body > #video > video {
+  width:100%;
+  height:100%;
+}
+body > #meet {
+  width: 140px;
+  flex-shrink: 0;
+  flex-grow: 0;
+  background: rgb(27, 38, 56);
+  position:relative;
+}*/
+body > #video > #upload  {
+  position: absolute;
+  width: 100%;
+  background: #00000078;
+  color: white;
+  z-index: 1;
+  text-align: center;
+  font-family: sans-serif;
+  font-size: xx-large;
+  padding: 20px;
+  box-sizing: border-box;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  height: 130px;
+  line-height: 1em;
+}
+#fileoptions {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  text-align: right;
+  width: 38px;
+  background:#00000078;
+  border-radius: 10px;
+}
+#fileoptions > button {
+  font-family: Material Icons;
+  border: none;
+  background: none;
+  color: white;
+  font-size: 24px;
+  padding: 7px;
+  cursor: pointer;
+}
+.mdl-button, .mdl-button--fab:focus:not(:active) {
+  color:red;
+  background:white;
+}
+.mdl-button:hover {
+  background: rgb(230, 230, 230);
+}
+.mdl-button.mdl-button--colored {
+  color:white;
+  background: red;
+}
+.mdl-button.mdl-button--colored:hover {
+  background: rgb(255, 50, 50);
+}
+body {
+  background: linear-gradient(red,black);
+  height:100%;
+  margin:0;
+}
+#video, #meet {
+  position:absolute;
+}
+.smallscreen {
+  right:20px;
+  top:20px;
+  width:349px;
+  height:201px;
+  overflow:hidden;
+  border-radius:10px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  z-index:1;
+}
+.fullscreen {
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  border-radius:0;
+}
+#controls {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 50px;
+  background: linear-gradient(transparent,black);
+  text-align: center;
+  box-shadow: 0 1px 1.5px 0 rgba(0,0,0,.12),0 1px 1px 0 rgba(0,0,0,.24);
+}
+.no_controls > #controls {
+  display:none;
+}
+#controls > button {
+  font-family: Material Icons;
+  border: 0;
+  background: white;
+  color: red;
+  border-radius: 50%;
+  font-size: 24px;
+  text-align: center;
+  outline:none;
+  cursor:pointer;
+  padding:0;
+  transition: background 0.5s;
+  width: 56px;
+  height: 56px;
+}
+#controls > button:hover {
+  background: rgb(230, 230, 230);
+}
+#controls > button.highlight {
+  background: red;
+  color: white;
+}
+#controls > button.highlight:hover {
+  background: rgb(255, 50, 50);
+}
+.fullscreen > #controls {
+  height:85px;
+}
+.smallscreen > #controls > button {
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+}
+#video > video, #video > iframe {
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:black;
+}
