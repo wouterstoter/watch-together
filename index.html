@@ -417,7 +417,7 @@
       document.querySelector("li#upload").addEventListener("click", upload);
       document.querySelector("button#open").addEventListener("click", open);
       document.querySelector("button#upload").addEventListener("click", upload);
-      document.querySelector("button#play").addEventListener("click", e => {video.paused ? video.play() : video.pause()});
+      document.querySelector("button#play").addEventListener("click", e => {video.paused ? video.play().catch(e => {video.muted = true; video.play()}) : video.pause()});
       document.querySelector("button#speed").addEventListener("click", e => {video.playbackRate = Number(prompt("What playback speed do you want?",video.playbackRate)) || video.playbackRate});
       document.querySelector("button#sync").addEventListener("click", e => {if (Object.keys(api._participants).length > 1) api.executeCommand("sendEndpointTextMessage",Object.keys(api._participants).filter(a => a != api._myUserID)[0],"stateRequest")});
       document.querySelector("button#info").addEventListener("click", e => {alert('This program is powered by the amazing video calling service of Jitsi (https://jitsi.org/) to make it possible to (video)call with eachother, and the awesome filesharing service GoFile.io (https://gofile.io/) to make it possible to upload your own videos to watch together. Please go to their websites and give them some love!')});
