@@ -1,5 +1,9 @@
+var api;
+var laststate;
+var ignore = false;
+var src;
+var fileupload = {};
 window.addEventListener('DOMContentLoaded', (event) => {
-  var api;
   try {
     var roomName = (document.location.hash || (document.location.hash = "#" + (prompt("Please enter room name") || Math.random().toString(36).substring(2)))).slice(1)
     api = new JitsiMeetExternalAPI('meet.jit.si', {
@@ -53,9 +57,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
     document.querySelector("#meet").classList.add("no_controls");
   }
   
-  var laststate;
-  var ignore = false;
-  var src;
   api.addEventListener("endpointTextMessageReceived", async function(e){
     var data = e.data.eventData.text;
     console.log(data);
@@ -118,7 +119,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
     sendState({"type":"newVid"});
     loadVid();
   }
-  var fileupload = {};
   function upload() {
     deleteFile();
     fileupload = {};
