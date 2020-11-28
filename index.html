@@ -220,7 +220,7 @@
           width: "100%",
           height: "100%",
           parentNode: document.querySelector('#meet'),
-          configOverwrite: { },
+          configOverwrite: {},
           interfaceConfigOverwrite: {
             APP_NAME: 'Watch Together',
             NATIVE_APP_NAME: 'Watch Together',
@@ -232,7 +232,9 @@
             CONNECTION_INDICATOR_AUTO_HIDE_TIMEOUT: 1,
             TOOLBAR_TIMEOUT: 1,
             TOOLBAR_BUTTONS: [],
-            SHOW_CHROME_EXTENSION_BANNER: false
+            SHOW_CHROME_EXTENSION_BANNER: false,
+            DEFAULT_BACKGROUND: "#FF000080",
+            DEFAULT_REMOTE_DISPLAY_NAME: 'Fellow Watcher'
           }
         });
         api.addEventListener("videoConferenceJoined", function(e){
