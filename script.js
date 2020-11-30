@@ -24,9 +24,13 @@ window.addEventListener('DOMContentLoaded', (event) => {
         TOOLBAR_TIMEOUT: 1,
         TOOLBAR_BUTTONS: [],
         SHOW_CHROME_EXTENSION_BANNER: false,
+        RECENT_LIST_ENABLED: false,
         DEFAULT_BACKGROUND: "#FF000080",
         DEFAULT_REMOTE_DISPLAY_NAME: 'Fellow Watcher'
       }
+    });
+    api.addEventListener("tileViewChanged", function(e){
+      if (e.enabled) api.executeCommand('toggleTileView');
     });
     api.addEventListener("videoConferenceJoined", function(e){
       document.querySelector("#meet").classList.remove("fullscreen");
@@ -35,6 +39,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
       api.executeCommand('subject', ' ');
       setTimeout(e => {
         if (Object.keys(api._participants).length > 1) api.executeCommand("sendEndpointTextMessage",Object.keys(api._participants).filter(a => a != api._myUserID)[0],"stateRequest")
+      api.executeCommand('toggleFilmStrip');
+      api.executeCommand('toggleTileView');
       },1000)
     });
     api.addEventListener("videoConferenceLeft", function(e){
@@ -51,52 +57,52 @@ window.addEventListener('DOMContentLoaded', (event) => {
     api.addEventListener("videoMuteStatusChanged", function(e){
       document.querySelector("#meet > #controls > #videocam").innerText = e.muted ? "videocam_off" : "videocam";
     });
+    api.addEventListener("endpointTextMessageReceived", async function(e){
+      var data = e.data.eventData.text;
+      console.log(data);
+      if (data == "stateRequest") {
+        laststate = {
+          "src":src,
+          "paused":video.paused,
+          "currentTime":video.currentTime,
+          "event":"stateRequest",
+          "playbackRate":video.playbackRate,
+        }
+        api.executeCommand("sendEndpointTextMessage",e.data.senderInfo.id,laststate)
+      } else if (data.event == "remove") {
+        remove();
+      }  else if (data.event == "upload") {
+        if (data.progress == "start") {
+          video.pause();
+          document.querySelector("div#upload > i").innerText = data.name;
+          document.querySelector("div#upload").style.display = "";
+          document.querySelector("div#overlay").style.display = "none";
+        } else if (data.progress == "done") {
+          document.querySelector("div#upload > i").innerText = "video";
+          document.querySelector("div#upload").style.display = "none";
+          document.querySelector("div#upload > progress").value = 0;
+        } else {
+          document.querySelector("div#upload > progress").value = data.progress;
+        }
+      } else if (!laststate || JSON.stringify(laststate, Object.keys(laststate).sort()) != JSON.stringify(data, Object.keys(data).sort())) {
+        ignore = true;
+        if (data.src && src != data.src) {src = data.src;loadVid();}
+        if (data.event == "waiting" || data.event == "pause" || data.event == "seeked" || data.event == "stateRequest") {
+          if (Math.abs(data.currentTime - video.currentTime) > 0.5 && (!laststate || data.currentTime != laststate.currentTime)) video.currentTime = data.currentTime;
+        }
+        if (data.playbackRate != video.playbackRate) video.playbackRate = data.playbackRate;
+        if (data.paused != video.paused && data.event != "waiting") data.paused ? await video.pause() : await video.play();
+        if (data.event == "waiting") await video.pause();
+        laststate = data;
+        setTimeout(a => {ignore = false},100)
+      }
+    });
   } catch(e) {
     document.querySelector("#meet").classList.remove("fullscreen");
     document.querySelector("#meet").classList.add("smallscreen");
     document.querySelector("#meet").classList.add("no_controls");
   }
   
-  api.addEventListener("endpointTextMessageReceived", async function(e){
-    var data = e.data.eventData.text;
-    console.log(data);
-    if (data == "stateRequest") {
-      laststate = {
-        "src":src,
-        "paused":video.paused,
-        "currentTime":video.currentTime,
-        "event":"stateRequest",
-        "playbackRate":video.playbackRate,
-      }
-      api.executeCommand("sendEndpointTextMessage",e.data.senderInfo.id,laststate)
-    } else if (data.event == "remove") {
-      remove();
-    }  else if (data.event == "upload") {
-      if (data.progress == "start") {
-        video.pause();
-        document.querySelector("div#upload > i").innerText = data.name;
-        document.querySelector("div#upload").style.display = "";
-        document.querySelector("div#overlay").style.display = "none";
-      } else if (data.progress == "done") {
-        document.querySelector("div#upload > i").innerText = "video";
-        document.querySelector("div#upload").style.display = "none";
-        document.querySelector("div#upload > progress").value = 0;
-      } else {
-        document.querySelector("div#upload > progress").value = data.progress;
-      }
-    } else if (!laststate || JSON.stringify(laststate, Object.keys(laststate).sort()) != JSON.stringify(data, Object.keys(data).sort())) {
-      ignore = true;
-      if (data.src && src != data.src) {src = data.src;loadVid();}
-      if (data.event == "waiting" || data.event == "pause" || data.event == "seeked" || data.event == "stateRequest") {
-        if (Math.abs(data.currentTime - video.currentTime) > 0.5 && (!laststate || data.currentTime != laststate.currentTime)) video.currentTime = data.currentTime;
-      }
-      if (data.playbackRate != video.playbackRate) video.playbackRate = data.playbackRate;
-      if (data.paused != video.paused && data.event != "waiting") data.paused ? await video.pause() : await video.play();
-      if (data.event == "waiting") await video.pause();
-      laststate = data;
-      setTimeout(a => {ignore = false},100)
-    }
-  });
   const video = document.querySelector('video');
   function sendState(e){
     document.querySelector("button#play").innerText = video.paused ? "play_arrow" : "pause";
@@ -262,6 +268,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
   }
   api.addEventListener("readyToClose", function(e){
     document.querySelector("#meet").style.width = 0;
+    api.dispose();
     deleteFile();
   });
   video.addEventListener("play", sendState);
@@ -275,5 +282,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
   });
   window.addEventListener("beforeunload", function (e) {
     deleteFile();
+    api.dispose();
   });
 });
