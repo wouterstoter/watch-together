@@ -37,10 +37,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
       document.querySelector("#meet").classList.add("smallscreen");
       document.querySelector("#meet").classList.remove("no_controls");
       api.executeCommand('subject', ' ');
-      setTimeout(e => {
-        if (Object.keys(api._participants).length > 1) api.executeCommand("sendEndpointTextMessage",Object.keys(api._participants).filter(a => a != api._myUserID)[0],"stateRequest")
       api.executeCommand('toggleFilmStrip');
       api.executeCommand('toggleTileView');
+      setTimeout(e => {
+        if (Object.keys(api._participants).length > 1) api.executeCommand("sendEndpointTextMessage",Object.keys(api._participants).filter(a => a != api._myUserID)[0],"stateRequest")
       },1000)
     });
     api.addEventListener("videoConferenceLeft", function(e){

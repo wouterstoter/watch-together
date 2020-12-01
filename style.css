@@ -99,6 +99,9 @@ body {
 #video, #meet {
   position:absolute;
 }
+#meet:not(.no_controls) > iframe {
+  pointer-events:none;
+}
 .smallscreen {
   right:20px;
   top:20px;
