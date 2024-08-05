@@ -6,7 +6,7 @@ var fileupload = {};
 window.addEventListener('DOMContentLoaded', (event) => {
   try {
     var roomName = (document.location.hash || (document.location.hash = "#" + (prompt("Please enter room name") || Math.random().toString(36).substring(2)))).slice(1)
-    api = new JitsiMeetExternalAPI('meet.jit.si', {
+    api = new JitsiMeetExternalAPI('jitsi.nluug.nl', {
       roomName: "watch-together/" + roomName,
       width: "100%",
       height: "100%",
